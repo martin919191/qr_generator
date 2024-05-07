@@ -510,6 +510,7 @@ def determine_smallest_qr_version(
         if len(data) <= int(size):
             return i
 
+    raise Exception("Data is too large to be fit in any of the QR versions. Please shorten the data.")
 
 def get_char_count_indicator(
         encoding_mode: str,
@@ -554,9 +555,9 @@ def encode(
         encoding_mode)
 
     # 2 - Get smallest QR version required
-    qr_version = qr_version if qr_version is not None else determine_smallest_qr_version(encoding_mode,
-                                                                                         error_correction_level,
-                                                                                         data)
+    #qr_version = qr_version if qr_version is not None else determine_smallest_qr_version(encoding_mode,
+    #                                                                                     error_correction_level,
+    #                                                                                     data)
 
     # 3 - Get character count indicator
     char_count_indicator = get_char_count_indicator(
@@ -1247,7 +1248,6 @@ def generate_qr(data: str, error_correction_level=None, qr_version=None, dev=Fal
         qr_version = determine_smallest_qr_version(encoding_mode,
                                                    error_correction_level,
                                                    data)
-
     encoded_qr_info = encode(error_correction_level,
                              data,
                              qr_version=qr_version)
