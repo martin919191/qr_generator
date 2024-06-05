@@ -475,6 +475,16 @@ def check_alphanunmeric(data: str):
             return False
     return True
 
+def check_numeric(data: str):
+    is_numeric = False
+
+    if data.isnumeric():
+        is_integer = float(data).is_integer()
+        is_zero = int(data) == 0 # Zero is not rendered OK if encoded as numeric, so return false so it gets encoded as something else.
+
+        is_numeric = is_integer and not is_zero
+
+    return is_numeric
 
 def best_encode_mode(data: str):
     """
@@ -483,7 +493,7 @@ def best_encode_mode(data: str):
     :data: The data to define the best encoding mode.
     :return: The best encoding mode.
     """
-    if data.isnumeric():
+    if check_numeric(data): 
         return encoding_modes.NUMERIC
     elif check_alphanunmeric(data):
         return encoding_modes.ALPHANUMERIC
@@ -636,8 +646,19 @@ def encode_numeric(
         error_correction_level: str,
         data: str):
     n = 3  # In numeric mode, the number is splitted in groups of three chars.
-    data_groups = [data[i:i + n] for i in range(0, len(data), n)]
-    data_groups = [bin((int(i))).replace("0b", "") for i in data_groups]
+    data = str(int(data)) # Transform to int and then again to str to remove left zeroes.
+    data_groups = [str(int(data[i:i + n])) for i in range(0, len(data), n)] 
+    
+    def convert_group(group):
+        if len(group) == 1:
+            number = (bin(int(group))).replace("0b", "").zfill(4)
+        elif len(group) == 2:
+            number = (bin(int(group))).replace("0b", "").zfill(7)
+        else:
+            number = (bin(int(group))).replace("0b", "").zfill(10)
+        return number
+    
+    data_groups = [convert_group(i) for i in data_groups]
     return data_groups
 
 ###############################################
