@@ -1,4 +1,3 @@
-from IPython.display import display
 from random import randint
 from functools import reduce
 import math
